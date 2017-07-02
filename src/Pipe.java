@@ -1,13 +1,30 @@
+import java.awt.image.BufferedImage;
+import java.io.File;
+
+import javax.imageio.ImageIO;
 
 public class Pipe {
-	private int x, y, width, height, speed;
+	private int x, y, height, speed;
+	private BufferedImage pipeImage;
 	
-	public Pipe(int x, int y, int height) {
+	public Pipe(int x, int y, int height, boolean top) {
 		this.x = x;
 		this.y = y;
-		width = 50;
 		this.height = height;
 		speed = 3;
+		
+		String file;
+		if (top) {
+			file = "img/pipetop.png";
+		} else {
+			file = "img/pipebottom.png";
+		}
+		
+		try {
+			pipeImage = ImageIO.read(new File(file));
+		} catch (Exception e) {
+			System.out.println(e);
+		}
 	}
 	
 	public void tick() {
@@ -15,7 +32,7 @@ public class Pipe {
 	}
 	
 	public boolean isOut() {
-		return (x + width < 0);
+		return (x + pipeImage.getWidth() < 0);
 	}
 	
 	public int getX() {
@@ -27,10 +44,14 @@ public class Pipe {
 	}
 	
 	public int getWidth() {
-		return width;
+		return pipeImage.getWidth();
 	}
 	
 	public int getHeight() {
 		return height;
+	}
+	
+	public BufferedImage getImage() {
+		return pipeImage;
 	}
 }

@@ -1,4 +1,9 @@
+import java.awt.Graphics;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.util.ArrayList;
+
+import javax.imageio.ImageIO;
 
 public class Game {
 	private ArrayList<Bird> birds;
@@ -6,8 +11,10 @@ public class Game {
 	private int score, spawnInterval, interval, birdsAlive;
 	private int width, height;
 	private double backgroundx, backgroundSpeed;
+	private BufferedImage background;
+	private Graphics window;
 	
-	public Game(int width, int height) {
+	public Game(int width, int height, Graphics window) {
 		birds = new ArrayList<Bird>();
 		pipes = new ArrayList<Pipe>();
 		score = 0;
@@ -17,15 +24,29 @@ public class Game {
 		backgroundSpeed = 0.5;
 		this.width = width;
 		this.height = height;
+		this.window = window;
 		
-		Bird b = new Bird();
+		try {
+			background = ImageIO.read(new File("img/background.png"));
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+		
+		Bird b = new Bird(80, 250);
 		birds.add(b);
 		
 		birdsAlive = birds.size();
 	}
 	
 	public void tick() {
+		window.clearRect(0, 0, width, height);
+		for (int i = 0; i < Math.ceil(width / background.getWidth()) + 1; i++) {
+			window.drawImage(background, (int)(i * background.getWidth() - Math.floor(backgroundx % background.getWidth())), 0, width, height, null);
+		}
+		
 		backgroundx += backgroundSpeed;
+		
+		
 		
 		double nextHole;
 		if (birds.size() > 0) {
@@ -54,15 +75,24 @@ public class Game {
                         }
 					}
 				}
+				
+				if (!b.isAlive()) {
+					continue;
+				}
+				
+				window.drawImage(b.getImage(), b.getX(), b.getY(), b.getWidth(), b.getHeight(), null);
 			}
 		}
 		
 		for (int i = 0; i < pipes.size(); i++) {
 			Pipe p = pipes.get(i);
 			p.tick();
+			
 			if (p.isOut()) {
 				pipes.remove(i);
 				i--;
+			} else {
+				window.drawImage(p.getImage(), p.getX(), p.getY(), p.getWidth(), p.getHeight(), null);
 			}
 		}
 	
@@ -71,10 +101,10 @@ public class Game {
 			int holeSize = 120;
 			int pos = (int) (Math.round(Math.random() * (height - delta * 2 - holeSize)) - delta);
 			
-			Pipe p = new Pipe(width, 0, pos);
+			Pipe p = new Pipe(width, 0, pos, true);
 			pipes.add(p);
 			
-			p = new Pipe(width, pos + holeSize, height);
+			p = new Pipe(width, pos + holeSize, height, false);
 			pipes.add(p);
 		}
 		
@@ -101,5 +131,11 @@ public class Game {
 	
 	public int getScore() {
 		return score;
+	}
+	
+	public void flap() {
+		for (int i = 0; i < birds.size(); i++) {
+			birds.get(i).flap();
+		}
 	}
 }

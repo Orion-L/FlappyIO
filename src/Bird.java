@@ -1,18 +1,26 @@
+import java.awt.image.BufferedImage;
+import java.io.File;
+import javax.imageio.ImageIO;
 
 public class Bird {
-	private int x, y, width, height, jump;
+	private int x, y, jump;
 	private double gravity, velocity;
 	private boolean alive;
+	private BufferedImage birdImage;
 	
-	public Bird() {
-		x = 80;
-		y = 250;
-		width = 40;
-		height = 50;
+	public Bird(int x, int y) {
+		this.x = x;
+		this.y = y;
 		gravity = 0;
 		velocity = 0.3;
 		jump = -6;
 		alive = true;
+		
+		try {
+			birdImage = ImageIO.read(new File("img/bird.png"));
+		} catch (Exception e) {
+			System.out.println(e);
+		}
 	}
 	
 	public void flap() {
@@ -41,10 +49,14 @@ public class Bird {
 	}
 	
 	public int getWidth() {
-		return width;
+		return birdImage.getWidth();
 	}
 	
 	public int getHeight() {
-		return height;
+		return birdImage.getHeight();
+	}
+	
+	public BufferedImage getImage() {
+		return birdImage;
 	}
 }
