@@ -11,7 +11,7 @@ public class FlappyIO {
 	public static void main(String[] args) {
 		ImageIcon backgroundImage = new ImageIcon("img/background.png");
 		
-		int windowWidth = backgroundImage.getIconWidth() + 50;
+		int windowWidth = backgroundImage.getIconWidth() + 200;
 		int windowHeight = backgroundImage.getIconHeight();
 		
 		JFrame gameWindow =  new JFrame();
