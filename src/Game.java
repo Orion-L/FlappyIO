@@ -1,3 +1,5 @@
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
@@ -34,10 +36,11 @@ public class Game {
 			System.out.println(e);
 		}
 		
-		Bird b = new Bird(80, 250);
+		Bird b = new Bird(width / 5, height / 2);
 		birds.add(b);
 		
 		birdsAlive = birds.size();
+		
 	}
 	
 	public void tick() {
@@ -48,9 +51,7 @@ public class Game {
 		
 		backgroundx += backgroundSpeed;
 		
-		
-		
-		double nextHole;
+		double nextHole = 0;
 		if (birds.size() > 0) {
 			for (int i = 0; i < pipes.size(); i += 2) {
 				Pipe p = pipes.get(i);
@@ -66,6 +67,7 @@ public class Game {
 				
 				b.tick();
 				if (b.getY() >= height || b.getY() + b.getHeight() <= 0) {
+					birdsAlive--;
 					b.kill();
 				} else {
 					for (int j = 0; j < pipes.size(); j++) {
@@ -73,6 +75,7 @@ public class Game {
                         if (b.getX() < p.getX() + p.getWidth() && b.getX() + b.getWidth() > p.getX()
                          && b.getY() < p.getY() + p.getHeight() && b.getY() + b.getHeight() > p.getY()) {
                             b.kill();
+                            birdsAlive--;
                             break;
                         }
 					}
@@ -87,6 +90,11 @@ public class Game {
 				
 				window.drawImage(op.filter(b.getImage(), null), b.getX(), b.getY(), b.getWidth(), b.getHeight(), null);
 			}
+		}
+		
+		if (birdsAlive <= 0) {
+			// new game?
+			//System.exit(0);
 		}
 		
 		for (int i = 0; i < pipes.size(); i++) {
@@ -117,6 +125,12 @@ public class Game {
 		interval = (interval + 1) % spawnInterval;
 		
 		score++;
+
+		/**
+		window.setColor(new Color(127,127,127));
+		window.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
+		window.drawString("Score = " + score, 0, 0);
+		**/
 	}
 	
 	public boolean isGameOver() {

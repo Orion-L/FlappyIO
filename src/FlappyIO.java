@@ -11,14 +11,15 @@ public class FlappyIO {
 	public static void main(String[] args) {
 		ImageIcon backgroundImage = new ImageIcon("img/background.png");
 		
-		int windowWidth = backgroundImage.getIconWidth() + 200;
-		int windowHeight = backgroundImage.getIconHeight();
+		int windowWidth = backgroundImage.getIconWidth() + 250;
+		int windowHeight = backgroundImage.getIconHeight() + 100;
 		
 		JFrame gameWindow =  new JFrame();
 		gameWindow.setTitle("FlappyIO");
 		gameWindow.setSize(windowWidth, windowHeight);
 		gameWindow.setResizable(false);
 		gameWindow.setVisible(true);
+		gameWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		Game g = new Game(windowWidth, windowHeight, gameWindow.getGraphics());
 		g.tick();
@@ -31,7 +32,7 @@ public class FlappyIO {
 			}
 		};
 		
-		
+		/**
 		KeyListener flap = new KeyListener() {
 			public void keyPressed(KeyEvent e) {
 				g.flap();
@@ -53,7 +54,7 @@ public class FlappyIO {
 			}
 		};
 		
-		gameWindow.addKeyListener(flap);
+		gameWindow.addKeyListener(flap);**/
 		new Timer(tickRate, tick).start();
 		
 		/**
