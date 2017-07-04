@@ -9,11 +9,12 @@ import javax.swing.Timer;
 public class FlappyIO {
 
 	public static void main(String[] args) {
+		// Background image, window width and height
 		ImageIcon backgroundImage = new ImageIcon("img/background.png");
-		
 		int windowWidth = backgroundImage.getIconWidth() + 250;
 		int windowHeight = backgroundImage.getIconHeight() + 100;
 		
+		// Set up game window
 		JFrame gameWindow =  new JFrame();
 		gameWindow.setTitle("FlappyIO");
 		gameWindow.setSize(windowWidth, windowHeight);
@@ -21,16 +22,9 @@ public class FlappyIO {
 		gameWindow.setVisible(true);
 		gameWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
+		// Start the game
 		Game g = new Game(windowWidth, windowHeight, gameWindow.getGraphics());
 		g.tick();
-		
-		int tickRate = 1000 / 60;
-		
-		ActionListener tick = new ActionListener() {
-			public void actionPerformed(ActionEvent evt) {
-				g.tick();
-			}
-		};
 		
 		/**
 		KeyListener flap = new KeyListener() {
@@ -55,13 +49,16 @@ public class FlappyIO {
 		};
 		
 		gameWindow.addKeyListener(flap);**/
-		new Timer(tickRate, tick).start();
 		
-		/**
-		JLabel backLabel = new JLabel(backgroundImage);
-		gameWindow.add(backLabel);
-		gameWindow.setVisible(true);
-		**/
+		// Set the tick timer
+		int tickRate = 1000 / 60;
+		ActionListener tick = new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				g.tick();
+			}
+		};
+
+		new Timer(tickRate, tick).start();
 	}
 
 }
