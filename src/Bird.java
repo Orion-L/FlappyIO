@@ -59,4 +59,8 @@ public class Bird {
 	public BufferedImage getImage() {
 		return birdImage;
 	}
+	
+	public double getGravity() {
+		return gravity;
+	}
 }

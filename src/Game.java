@@ -1,4 +1,6 @@
 import java.awt.Graphics;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
@@ -80,7 +82,10 @@ public class Game {
 					continue;
 				}
 				
-				window.drawImage(b.getImage(), b.getX(), b.getY(), b.getWidth(), b.getHeight(), null);
+				AffineTransform tx = AffineTransform.getRotateInstance(Math.PI / 2 * (b.getGravity() / 20), b.getWidth() / 2, b.getHeight() / 2);
+				AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_BILINEAR);
+				
+				window.drawImage(op.filter(b.getImage(), null), b.getX(), b.getY(), b.getWidth(), b.getHeight(), null);
 			}
 		}
 		
@@ -92,6 +97,7 @@ public class Game {
 				pipes.remove(i);
 				i--;
 			} else {
+				
 				window.drawImage(p.getImage(), p.getX(), p.getY(), p.getWidth(), p.getHeight(), null);
 			}
 		}
@@ -99,7 +105,7 @@ public class Game {
 		if (interval == 0) {
 			int delta = 50;
 			int holeSize = 120;
-			int pos = (int) (Math.round(Math.random() * (height - delta * 2 - holeSize)) - delta);
+			int pos = (int) (Math.round(Math.random() * (height - delta * 2 - holeSize)) + delta);
 			
 			Pipe p = new Pipe(width, 0, pos, true);
 			pipes.add(p);
