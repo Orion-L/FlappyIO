@@ -1,11 +1,12 @@
+package neuroevolver;
 
-public class Neuron {
+class Neuron {
 	private double value;
 	private double inputWeights[];
 	
 	public Neuron(int numInputs) {
-		value = 0;
-		inputWeights = new double[numInputs];
+		this.value = 0;
+		this.inputWeights = new double[numInputs];
 	}
 	
 	public void setValue(double value) {
@@ -13,7 +14,7 @@ public class Neuron {
 	}
 	
 	public void setWeight(int input, double weight) {
-		inputWeights[input] = weight;
+		this.inputWeights[input] = weight;
 	}
 	
 	public double getValue() {
@@ -22,5 +23,16 @@ public class Neuron {
 	
 	public double getWeight(int input) {
 		return inputWeights[input];
+	}
+	
+	public Neuron clone() {
+		Neuron n = new Neuron(this.inputWeights.length);
+		n.value = this.value;
+		
+		for (int i = 0; i < this.inputWeights.length; i++) {
+			n.inputWeights[i] = this.inputWeights[i];
+		}
+		
+		return n;
 	}
 }
