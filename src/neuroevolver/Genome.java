@@ -25,12 +25,16 @@ class Genome implements Comparable<Genome> {
 		return this.network;
 	}
 	
+	public double[] evaluate(double[] inputs) {
+		return this.network.evaluateNetwork(inputs);
+	}
+	
 	public Genome clone() {
 		return new Genome(this.network.clone(), this.score);
 	}
 
 	@Override
 	public int compareTo(Genome o) {
-		return this.score - o.score;
+		return o.score - this.score;
 	}
 }

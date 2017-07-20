@@ -51,7 +51,7 @@ public class Game {
 		}
 		
 		int[] hidden = {1};
-		this.neuro = new Neuroevolver(50, 1, 0.5, 0.1, 0.5, 0.2, 0.2, 2, 1, hidden);
+		this.neuro = new Neuroevolver(50, 1, 0.5, 0.1, 200, 0.2, 0.2, 2, 1, hidden);
 		this.neuro.nextGeneration();
 		
 		for (int i = 0; i < this.neuro.generationSize(); i++) {
@@ -66,11 +66,20 @@ public class Game {
 	
 	public void tick() {
 		// Find y coordinate of next hole
-		double nextHole = 0;
+		double nextHole = -1;
 		if (this.birds.size() > 0) {
 			for (int i = 0; i < this.pipes.size(); i += 2) {
 				Pipe p = this.pipes.get(i);
-				if (p.getX() + p.getWidth() > this.birds.get(0).getX()) nextHole = p.getHeight();
+				
+				for (int j = 0; j < this.birds.size(); j++) {
+					Bird b = this.birds.get(j);
+					if (b.isAlive()) {
+						if (p.getX() + p.getWidth() > b.getX()) nextHole = p.getHeight() + 60;
+						break;
+					}
+				}
+				
+				if (nextHole != -1) break;
 			}
 		}
 		
@@ -82,7 +91,8 @@ public class Game {
 			if (b.isAlive()) {
 				// Update the bird
 				b.tick();
-				double[] inputs = {(double) b.getY() / this.height, nextHole / this.height};
+				
+				double[] inputs = {(double) (this.height - b.getY()) / this.height, (this.height - nextHole) / this.height};
 				if (this.neuro.evaluateGenome(i, inputs)[0] > 0.5) b.flap();
 				
 				if (b.getY() >= this.height || b.getY() + b.getHeight() <= 0) {
@@ -132,8 +142,8 @@ public class Game {
 			// Ensure the hole is 50px away from both top and bottom of the window
 			int delta = 50;
 			int holeSize = 120;
-			//int pos = (int) (Math.round(Math.random() * (height - delta * 2 - holeSize)) + delta);
-			int pos = this.height / 2 - holeSize / 2;
+			int pos = (int) (Math.round(Math.random() * (height - delta * 2 - holeSize)) + delta);
+			//-int pos = this.height / 2 - holeSize / 2;
 			
 			// Create the pipes
 			Pipe p = new Pipe(this.width, 0, pos, true);
@@ -145,7 +155,11 @@ public class Game {
 		
 		this.interval = (this.interval + 1) % this.spawnInterval;
 		
-		this.score++;		
+		this.score++;
+		
+		if (this.score > this.maxScore) {
+			this.maxScore = this.score;
+		}
 	}
 	
 	public void draw() {

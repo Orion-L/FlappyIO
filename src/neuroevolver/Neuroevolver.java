@@ -1,6 +1,6 @@
 package neuroevolver;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 
 public class Neuroevolver {
 	private int genPopulation, genChildren, numInput, numOutput;
@@ -34,7 +34,10 @@ public class Neuroevolver {
 	}
 	
 	public double[] evaluateGenome(int genomeNum, double[] inputs) {
-		return this.currentGeneration.getGenome(genomeNum).getNetwork().evaluateNetwork(inputs);
+		if (genomeNum == 0) {
+			System.out.println(inputs[0] + " " + inputs[1] + " " + this.currentGeneration.getGenome(genomeNum).evaluate(inputs)[0]);
+		}
+		return this.currentGeneration.getGenome(genomeNum).evaluate(inputs);
 	}
 	
 	public void nextGeneration() {
@@ -47,7 +50,7 @@ public class Neuroevolver {
 			}
 		} else {
 			this.currentGeneration.sortGenomes();
-			ArrayList<Genome> nextGenomes = new ArrayList<Genome>();
+			LinkedList<Genome> nextGenomes = new LinkedList<Genome>();
 			for (int i = 0; i < Math.round(this.elitism * this.genPopulation); i++) {
 				if (nextGenomes.size() < this.genPopulation) {
 					nextGenomes.add(this.currentGeneration.getGenome(i).clone());
@@ -72,7 +75,7 @@ public class Neuroevolver {
 			int max = 0;
 			while (true) {
 				for (int i = 0; i < max; i++) {
-					Genome[] children = currentGeneration.breedGenomes(this.currentGeneration.getGenome(i), this.currentGeneration.getGenome(max));
+					Genome[] children = this.currentGeneration.breedGenomes(this.currentGeneration.getGenome(i), this.currentGeneration.getGenome(max));
 					for (int j = 0; j < children.length; j++) {
 						nextGenomes.add(children[j]);
 						if (nextGenomes.size() >= this.genPopulation) {

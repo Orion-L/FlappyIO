@@ -18,19 +18,19 @@ class Generation {
 	}
 	
 	public void addGenome(Genome g) {
-		genomes.add(g);
+		this.genomes.add(g);
 	}
 	
 	public void sortGenomes() {
-		Collections.sort((List<Genome>) genomes);
+		Collections.sort((List<Genome>) this.genomes);
 	}
 	
 	public Genome getGenome(int i) {
-		return genomes.get(i);
+		return this.genomes.get(i);
 	}
 	
 	public int genomeLength() {
-		return genomes.size();
+		return this.genomes.size();
 	}
 	
 	public Genome[] breedGenomes(Genome g, Genome h) {
@@ -38,15 +38,13 @@ class Generation {
 		for (int i = 0; i < this.numChildren; i++) {
 			Genome child = g.clone();
 			
-			NeuralNet hNet = h.getNetwork();
-			double[] hNetWeights = hNet.getWeights();
+			double[] hWeights = h.getNetwork().getWeights();
 			
-			NeuralNet childNet = child.getNetwork();
-			double[] childWeights = childNet.getWeights();
+			double[] childWeights = child.getNetwork().getWeights();
 			
-			for (int j = 0; j < hNetWeights.length; j++) {
+			for (int j = 0; j < hWeights.length; j++) {
 				if (Math.random() > this.crossoverRate) {
-					childWeights[j] = hNetWeights[j];
+					childWeights[j] = hWeights[j];
 				}
 			}
 			
@@ -56,7 +54,7 @@ class Generation {
 				}
 			}
 			
-			childNet.setWeights(childWeights);
+			child.getNetwork().setWeights(childWeights);
 			
 			ret.add(child);
 		}

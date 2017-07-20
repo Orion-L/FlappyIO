@@ -8,9 +8,9 @@ class NeuralNet {
 	private Neuron[][] hiddenLayers;
 	
 	public NeuralNet(int numInput, int numOutput, int[] numHidden) {
-		inputLayer = new Neuron[numInput];
-		outputLayer = new Neuron[numOutput];
-		hiddenLayers = new Neuron[numHidden.length][];
+		this.inputLayer = new Neuron[numInput];
+		this.outputLayer = new Neuron[numOutput];
+		this.hiddenLayers = new Neuron[numHidden.length][];
 
 		for (int i = 0; i < this.inputLayer.length; i++) {
 			this.inputLayer[i] = new Neuron(0);
@@ -39,33 +39,33 @@ class NeuralNet {
 	}
 	
 	public double[] evaluateNetwork(double[] inputs) {
-		for (int i = 0; i < inputLayer.length; i++) {
-			inputLayer[i].setValue(inputs[i]);
+		for (int i = 0; i < this.inputLayer.length; i++) {
+			this.inputLayer[i].setValue(inputs[i]);
 		}
 		
-		if (hiddenLayers.length > 0) {
-			for (int i = 0; i < hiddenLayers[0].length; i++) {
-				evaluateNeuron(inputLayer, hiddenLayers[0][i]);
+		if (this.hiddenLayers.length > 0) {
+			for (int i = 0; i < this.hiddenLayers[0].length; i++) {
+				evaluateNeuron(this.inputLayer, this.hiddenLayers[0][i]);
 			}
 			
-			for (int i = 1; i < hiddenLayers.length; i++) {
-				for (int j = 0; j < hiddenLayers[i].length; j++) {
-					evaluateNeuron(hiddenLayers[i - 1], hiddenLayers[i][j]);
+			for (int i = 1; i < this.hiddenLayers.length; i++) {
+				for (int j = 0; j < this.hiddenLayers[i].length; j++) {
+					evaluateNeuron(this.hiddenLayers[i - 1], this.hiddenLayers[i][j]);
 				}
 			}
 			
-			for (int i = 0; i < outputLayer.length; i++) {
-				evaluateNeuron(hiddenLayers[hiddenLayers.length - 1], outputLayer[i]);
+			for (int i = 0; i < this.outputLayer.length; i++) {
+				evaluateNeuron(this.hiddenLayers[this.hiddenLayers.length - 1], this.outputLayer[i]);
 			}
 		} else {
-			for (int i = 0; i < outputLayer.length; i++) {
-				evaluateNeuron(inputLayer, outputLayer[i]);
+			for (int i = 0; i < this.outputLayer.length; i++) {
+				evaluateNeuron(this.inputLayer, this.outputLayer[i]);
 			}
 		}
 		
-		double[] ret = new double[outputLayer.length];
-		for (int i  = 0; i < outputLayer.length; i++) {
-			ret[i] = outputLayer[i].getValue();
+		double[] ret = new double[this.outputLayer.length];
+		for (int i  = 0; i < this.outputLayer.length; i++) {
+			ret[i] = this.outputLayer[i].getValue();
 		}
 		
 		return ret;
@@ -75,28 +75,28 @@ class NeuralNet {
 	public double[] getWeights() {
 		LinkedList<Double> weights = new LinkedList<Double>();
 		
-		for (int i = 0; i < hiddenLayers.length; i++) {
-			for (int j = 0; j < hiddenLayers[i].length; j++) {
+		for (int i = 0; i < this.hiddenLayers.length; i++) {
+			for (int j = 0; j < this.hiddenLayers[i].length; j++) {
 				if (i == 0) {
-					for (int k = 0; k < inputLayer.length; k++) {
-						weights.add(hiddenLayers[i][j].getWeight(k));
+					for (int k = 0; k < this.inputLayer.length; k++) {
+						weights.add(this.hiddenLayers[i][j].getWeight(k));
 					}
 				} else {
-					for (int k = 0; k < hiddenLayers[i - 1].length; k++) {
-						weights.add(hiddenLayers[i][j].getWeight(k));
+					for (int k = 0; k < this.hiddenLayers[i - 1].length; k++) {
+						weights.add(this.hiddenLayers[i][j].getWeight(k));
 					}
 				}
 			}
 		}
 		
-		for (int i = 0; i < outputLayer.length; i++) {
-			if (hiddenLayers.length > 0) {
-				for (int j = 0; j < hiddenLayers[hiddenLayers.length - 1].length; j++) {
-					weights.add(outputLayer[i].getWeight(j));
+		for (int i = 0; i < this.outputLayer.length; i++) {
+			if (this.hiddenLayers.length > 0) {
+				for (int j = 0; j < this.hiddenLayers[this.hiddenLayers.length - 1].length; j++) {
+					weights.add(this.outputLayer[i].getWeight(j));
 				}
 			} else {
-				for (int j = 0; j < inputLayer.length; j++) {
-					weights.add(outputLayer[i].getWeight(j));
+				for (int j = 0; j < this.inputLayer.length; j++) {
+					weights.add(this.outputLayer[i].getWeight(j));
 				}
 			}
 		}
@@ -112,31 +112,31 @@ class NeuralNet {
 	public void setWeights(double[] weights) {
 		int arrCounter = 0;
 		
-		for (int i = 0; i < hiddenLayers.length; i++) {
-			for (int j = 0; j < hiddenLayers[i].length; j++) {
+		for (int i = 0; i < this.hiddenLayers.length; i++) {
+			for (int j = 0; j < this.hiddenLayers[i].length; j++) {
 				if (i == 0) {
-					for (int k = 0; k < inputLayer.length; k++) {
-						hiddenLayers[i][j].setWeight(k, weights[arrCounter]);
+					for (int k = 0; k < this.inputLayer.length; k++) {
+						this.hiddenLayers[i][j].setWeight(k, weights[arrCounter]);
 						arrCounter++;
 					}
 				} else {
-					for (int k = 0; k < hiddenLayers[i - 1].length; k++) {
-						hiddenLayers[i][j].setWeight(k, weights[arrCounter]);
+					for (int k = 0; k < this.hiddenLayers[i - 1].length; k++) {
+						this.hiddenLayers[i][j].setWeight(k, weights[arrCounter]);
 						arrCounter++;
 					}
 				}
 			}
 		}
 		
-		for (int i = 0; i < outputLayer.length; i++) {
-			if (hiddenLayers.length > 0) {
-				for (int j = 0; j < hiddenLayers[hiddenLayers.length - 1].length; j++) {
-					outputLayer[i].setWeight(j, weights[arrCounter]);
+		for (int i = 0; i < this.outputLayer.length; i++) {
+			if (this.hiddenLayers.length > 0) {
+				for (int j = 0; j < this.hiddenLayers[this.hiddenLayers.length - 1].length; j++) {
+					this.outputLayer[i].setWeight(j, weights[arrCounter]);
 					arrCounter++;
 				}
 			} else {
-				for (int j = 0; j < inputLayer.length; j++) {
-					outputLayer[i].setWeight(j, weights[arrCounter]);
+				for (int j = 0; j < this.inputLayer.length; j++) {
+					this.outputLayer[i].setWeight(j, weights[arrCounter]);
 					arrCounter++;
 				}
 			}
@@ -144,9 +144,9 @@ class NeuralNet {
 	}
 	
 	public NeuralNet clone() {
-		int[] hidden = new int[hiddenLayers.length];
-		for (int i = 0; i < hiddenLayers.length; i++) {
-			hidden[i] = hiddenLayers[i].length;
+		int[] hidden = new int[this.hiddenLayers.length];
+		for (int i = 0; i < this.hiddenLayers.length; i++) {
+			hidden[i] = this.hiddenLayers[i].length;
 		}
 		
 		NeuralNet n = new NeuralNet(this.inputLayer.length, this.outputLayer.length, hidden);
