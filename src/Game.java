@@ -1,6 +1,8 @@
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
@@ -8,21 +10,22 @@ import java.io.File;
 import java.util.LinkedList;
 
 import javax.imageio.ImageIO;
+import javax.swing.JPanel;
 
 import neuroevolver.Neuroevolver;
 
 
-public class Game {
+public class Game extends JPanel implements ActionListener {
+	private static final long serialVersionUID = 5676566905984384798L;
 	private LinkedList<Bird> birds;
 	private LinkedList<Pipe> pipes;
 	private int score, spawnInterval, interval, birdsAlive, genNumber, maxScore;
 	private int width, height;
 	private double backgroundx, backgroundSpeed;
 	private BufferedImage background;
-	private Graphics window;
 	private Neuroevolver neuro;
 	
-	public Game(int width, int height, Graphics window) {
+	public Game(int width, int height) {
 		// Birds and pipes lists
 		this.birds = new LinkedList<Bird>();
 		this.pipes = new LinkedList<Pipe>();
@@ -41,7 +44,6 @@ public class Game {
 		// Game width, height and frame
 		this.width = width;
 		this.height = height;
-		this.window = window;
 		
 		// Background image
 		try {
@@ -142,8 +144,7 @@ public class Game {
 			// Ensure the hole is 50px away from both top and bottom of the window
 			int delta = 50;
 			int holeSize = 120;
-			int pos = (int) (Math.round(Math.random() * (height - delta * 2 - holeSize)) + delta);
-			//-int pos = this.height / 2 - holeSize / 2;
+			int pos = (int) (Math.round(Math.random() * (this.height - delta * 2 - holeSize)) + delta);
 			
 			// Create the pipes
 			Pipe p = new Pipe(this.width, 0, pos, true);
@@ -162,18 +163,26 @@ public class Game {
 		}
 	}
 	
-	public void draw() {
-		this.window.clearRect(0, 0, this.width, this.height);
+	@Override
+	public void actionPerformed(ActionEvent evt) {
+		tick();
+		repaint();
+	}
+	
+	@Override
+	public void paintComponent(Graphics g) {
+		super.paintComponent(g);
+		g.clearRect(0, 0, this.width, this.height);
 		
 		// Loop through number of background images needed to cover entire window
-		for (int i = 0; i < Math.ceil(this.width / this.background.getWidth()) + 1; i++) {
+		for (int i = 0; i < Math.ceil(this.width / this.background.getWidth()) + 2; i++) {
 			// Draw background at offset x position
-			this.window.drawImage(this.background, 
-								  (int)(i * this.background.getWidth() - Math.floor(this.backgroundx % this.background.getWidth())), 
-								  0, this.width, this.height, null);
+			g.drawImage(this.background, 
+						(int)(i * this.background.getWidth() - Math.floor(this.backgroundx)), 
+						0, this.background.getWidth(), this.height, null);
 		}
 		
-		this.backgroundx += this.backgroundSpeed;
+		this.backgroundx = (this.backgroundx + this.backgroundSpeed) % this.background.getWidth();
 		
 		// Loop through all birds
 		for (int i = 0; i < this.birds.size(); i++) {
@@ -187,8 +196,8 @@ public class Game {
 				AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_BILINEAR);
 						
 				// Draw the bird
-				this.window.drawImage(op.filter(b.getImage(), null), b.getX(), b.getY(), 
-						              b.getWidth(), b.getHeight(), null);
+				g.drawImage(op.filter(b.getImage(), null), b.getX(), b.getY(), 
+						    b.getWidth(), b.getHeight(), null);
 			}
 		}
 		
@@ -198,17 +207,31 @@ public class Game {
 							
 			if (!p.isOut()) {
 				// Draw the pipe
-				this.window.drawImage(p.getImage(), p.getX(), p.getY(), 
-						              p.getWidth(), p.getHeight(), null);
+				BufferedImage img;
+				if (p.getHeight() > p.getImage().getHeight()) {
+					img = p.getImage();
+				} else {
+					// Crop image from the top rather than the bottom
+					img = p.getImage().getSubimage(0, p.getImage().getHeight() - p.getHeight(), 
+							                       p.getWidth(), p.getHeight());
+				}
+				
+				g.drawImage(img, p.getX(), p.getY(), 
+						    p.getWidth(), p.getHeight(), null);
 			}
 		}
 		
-		this.window.setColor(new Color(255,255,255));
-		this.window.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 20));
-		this.window.drawString("Max Score: " + this.maxScore, 50, 50);
-		this.window.drawString("Score: " + this.score, 50, 70);
-		this.window.drawString("Generation: " + this.genNumber, 50, 90);
-		this.window.drawString("Alive: " + this.birdsAlive, 50, 110);
+		g.setColor(new Color(255,255,255));
+		g.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 20));
+		g.drawString("Max Score: " + this.maxScore, 20, 20);
+		g.drawString("Score: " + this.score, 20, 20 + g.getFontMetrics().getHeight());
+		g.drawString("Generation: " + this.genNumber, 20, 20 + g.getFontMetrics().getHeight() * 2);
+		g.drawString("Alive: " + this.birdsAlive, 20, 20 + g.getFontMetrics().getHeight() * 3);
+	}
+	
+	@Override
+	public void update(Graphics g) {
+		paintComponent(g);
 	}
 	
 	private void restart() {
@@ -233,4 +256,5 @@ public class Game {
 		this.birdsAlive = this.birds.size();
 		
 	}
+
 }
