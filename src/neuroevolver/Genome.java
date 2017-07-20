@@ -1,6 +1,6 @@
 package neuroevolver;
 
-class Genome {
+class Genome implements Comparable<Genome> {
 	private int score;
 	private NeuralNet network;
 	
@@ -27,5 +27,10 @@ class Genome {
 	
 	public Genome clone() {
 		return new Genome(this.network.clone(), this.score);
+	}
+
+	@Override
+	public int compareTo(Genome o) {
+		return this.score - o.score;
 	}
 }

@@ -7,6 +7,10 @@ class Neuron {
 	public Neuron(int numInputs) {
 		this.value = 0;
 		this.inputWeights = new double[numInputs];
+		
+		for (int i = 0; i < this.inputWeights.length; i++) {
+			this.inputWeights[i] = Math.random() * 2 - 1;
+		}
 	}
 	
 	public void setValue(double value) {

@@ -57,6 +57,15 @@ public class FlappyIO {
 		};
 
 		new Timer(tickRate, tick).start();
+		
+		tickRate = 1000 / 60;
+		ActionListener drawfps = new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				g.draw();
+			}
+		};
+
+		new Timer(tickRate, drawfps).start();
 	}
 
 }
