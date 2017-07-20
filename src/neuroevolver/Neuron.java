@@ -9,7 +9,7 @@ class Neuron {
 		this.inputWeights = new double[numInputs];
 		
 		for (int i = 0; i < this.inputWeights.length; i++) {
-			this.inputWeights[i] = Math.random() * 2000 - 1000;
+			this.inputWeights[i] = Math.random() * 2 - 1;
 		}
 	}
 	

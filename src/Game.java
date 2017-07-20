@@ -53,7 +53,7 @@ public class Game extends JPanel implements ActionListener {
 		}
 		
 		int[] hidden = {1};
-		this.neuro = new Neuroevolver(50, 1, 0.5, 0.1, 200, 0.2, 0.2, 2, 1, hidden);
+		this.neuro = new Neuroevolver(50, 1, 0.5, 0.1, 0.2, 0.25, 0.2, 2, 1, hidden);
 		this.neuro.nextGeneration();
 		
 		for (int i = 0; i < this.neuro.generationSize(); i++) {
@@ -95,7 +95,7 @@ public class Game extends JPanel implements ActionListener {
 				b.tick();
 				
 				double[] inputs = {(double) (this.height - b.getY()) / this.height, (this.height - nextHole) / this.height};
-				if (this.neuro.evaluateGenome(i, inputs)[0] > 0.5) b.flap();
+				if (this.neuro.evaluateGenome(i, inputs)[0] > 0.55) b.flap();
 				
 				if (b.getY() >= this.height || b.getY() + b.getHeight() <= 0) {
 					// Bird is above or below game screen, kill it

@@ -146,6 +146,15 @@ class NeuralNet implements Comparable<NeuralNet> {
 		}
 	}
 	
+	public int getScore() {
+		return this.score;
+	}
+	
+	public void setScore(int score) {
+		this.score = score;
+	}
+	
+	@Override
 	public NeuralNet clone() {
 		int[] hidden = new int[this.hiddenLayers.length];
 		for (int i = 0; i < this.hiddenLayers.length; i++) {
@@ -172,13 +181,10 @@ class NeuralNet implements Comparable<NeuralNet> {
 		
 		return n;
 	}
-	
-	public int getScore() {
-		return this.score;
-	}
-	
-	public void setScore(int score) {
-		this.score = score;
+
+	@Override
+	public int compareTo(NeuralNet n) {
+		return n.score - this.score;
 	}
 	
 	private double activate(double x) {
@@ -192,10 +198,5 @@ class NeuralNet implements Comparable<NeuralNet> {
 		}
 		
 		output.setValue(activate(inputSum));
-	}
-
-	@Override
-	public int compareTo(NeuralNet n) {
-		return n.score - this.score;
 	}
 }

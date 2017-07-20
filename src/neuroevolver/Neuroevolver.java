@@ -55,6 +55,7 @@ public class Neuroevolver {
 			for (int i = 0; i < Math.round(this.elitism * this.genPopulation); i++) {
 				if (nextGen.size() < this.genPopulation) {
 					nextGen.add(this.currentGeneration.get(i).clone());
+					nextGen.get(nextGen.size() - 1).setScore(0);
 				}
 			}
 			
@@ -70,6 +71,7 @@ public class Neuroevolver {
 				
 				if (nextGen.size() < this.genPopulation) {
 					nextGen.add(newGenome);
+					nextGen.get(nextGen.size() - 1).setScore(0);
 				}
 			}
 			
@@ -79,6 +81,7 @@ public class Neuroevolver {
 					NeuralNet[] children = breedGenomes(this.currentGeneration.get(i), this.currentGeneration.get(max));
 					for (int j = 0; j < children.length; j++) {
 						nextGen.add(children[j]);
+						nextGen.get(nextGen.size() - 1).setScore(0);
 						if (nextGen.size() >= this.genPopulation) {				
 							this.currentGeneration = nextGen;
 							return;
@@ -123,6 +126,7 @@ public class Neuroevolver {
 		NeuralNet[] retArr = new NeuralNet[ret.size()];
 		for (int i = 0; i < ret.size(); i++) {
 			retArr[i] = ret.get(i);
+			retArr[i].setScore(0);
 		}
 		
 		return retArr;
