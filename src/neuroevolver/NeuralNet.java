@@ -2,16 +2,19 @@ package neuroevolver;
 
 import java.util.LinkedList;
 
-class NeuralNet {
+class NeuralNet implements Comparable<NeuralNet> {
 	private Neuron[] inputLayer;
 	private Neuron[] outputLayer;
 	private Neuron[][] hiddenLayers;
+	private int score;
 	
 	public NeuralNet(int numInput, int numOutput, int[] numHidden) {
+		this.score = 0;
+		
 		this.inputLayer = new Neuron[numInput];
 		this.outputLayer = new Neuron[numOutput];
 		this.hiddenLayers = new Neuron[numHidden.length][];
-
+		
 		for (int i = 0; i < this.inputLayer.length; i++) {
 			this.inputLayer[i] = new Neuron(0);
 		}
@@ -165,7 +168,17 @@ class NeuralNet {
 			}
 		}
 		
+		n.score = this.score;
+		
 		return n;
+	}
+	
+	public int getScore() {
+		return this.score;
+	}
+	
+	public void setScore(int score) {
+		this.score = score;
 	}
 	
 	private double activate(double x) {
@@ -179,5 +192,10 @@ class NeuralNet {
 		}
 		
 		output.setValue(activate(inputSum));
+	}
+
+	@Override
+	public int compareTo(NeuralNet n) {
+		return n.score - this.score;
 	}
 }
