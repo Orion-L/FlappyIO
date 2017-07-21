@@ -11,56 +11,56 @@ public class Bird {
 	public Bird(int x, int y) {
 		this.x = x;
 		this.y = y;
-		gravity = 0;
-		velocity = 0.3;
-		jump = -6;
-		alive = true;
+		this.gravity = 0;
+		this.velocity = 0.3;
+		this.jump = -6;
+		this.alive = true;
 		
 		try {
-			birdImage = ImageIO.read(new File("img/bird.png"));
+			this.birdImage = ImageIO.read(new File("img/bird.png"));
 		} catch (Exception e) {
 			System.out.println(e);
 		}
 	}
 	
 	public void flap() {
-		gravity = jump;
+		this.gravity = this.jump;
 	}
 	
 	public void tick() {
-		gravity += velocity;
-		y += gravity;
+		this.gravity += this.velocity;
+		this.y += this.gravity;
 	}
 	
 	public void kill() {
-		alive = false;
+		this.alive = false;
 	}
 	
 	public boolean isAlive() {
-		return alive;
+		return this.alive;
 	}
 	
 	public int getX() {
-		return x;
+		return this.x;
 	}
 	
 	public int getY() {
-		return y;
+		return this.y;
 	}
 	
 	public int getWidth() {
-		return birdImage.getWidth();
+		return this.birdImage.getWidth();
 	}
 	
 	public int getHeight() {
-		return birdImage.getHeight();
+		return this.birdImage.getHeight();
 	}
 	
 	public BufferedImage getImage() {
-		return birdImage;
+		return this.birdImage;
 	}
 	
 	public double getGravity() {
-		return gravity;
+		return this.gravity;
 	}
 }

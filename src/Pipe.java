@@ -11,47 +11,42 @@ public class Pipe {
 		this.x = x;
 		this.y = y;
 		this.height = height;
-		speed = 3;
+		this.speed = 3;
 		
-		String file;
-		if (top) {
-			file = "img/pipetop.png";
-		} else {
-			file = "img/pipebottom.png";
-		}
+		String file = (top ? "img/pipetop.png" : "img/pipebottom.png");
 		
 		try {
-			pipeImage = ImageIO.read(new File(file));
+			this.pipeImage = ImageIO.read(new File(file));
 		} catch (Exception e) {
 			System.out.println(e);
 		}
 	}
 	
 	public void tick() {
-		x -= speed;
+		this.x -= this.speed;
 	}
 	
 	public boolean isOut() {
-		return (x + pipeImage.getWidth() < 0);
+		return (this.x + this.pipeImage.getWidth() < 0);
 	}
 	
 	public int getX() {
-		return x;
+		return this.x;
 	}
 	
 	public int getY() {
-		return y;
+		return this.y;
 	}
 	
 	public int getWidth() {
-		return pipeImage.getWidth();
+		return this.pipeImage.getWidth();
 	}
 	
 	public int getHeight() {
-		return height;
+		return this.height;
 	}
 	
 	public BufferedImage getImage() {
-		return pipeImage;
+		return this.pipeImage;
 	}
 }
