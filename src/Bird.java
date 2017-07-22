@@ -4,17 +4,18 @@ import java.io.File;
 import javax.imageio.ImageIO;
 
 public class Bird {
-	private int x, y, jump;
-	private double gravity, velocity;
+	private static final double GRAVITY_ACCL = 0.3;
+	private static final int FLAP_ACCL = -6;
+	
+	private int x, y;
+	private double velocity;
 	private boolean alive;
 	private BufferedImage birdImage;
 	
 	public Bird(int x, int y) {
 		this.x = x;
 		this.y = y;
-		this.gravity = 0;
-		this.velocity = 0.3;
-		this.jump = -6;
+		this.velocity = 0;
 		this.alive = true;
 		
 		try {
@@ -25,12 +26,12 @@ public class Bird {
 	}
 	
 	public void flap() {
-		this.gravity = this.jump;
+		this.velocity = FLAP_ACCL;
 	}
 	
 	public void tick() {
-		this.gravity += this.velocity;
-		this.y += this.gravity;
+		this.velocity += GRAVITY_ACCL;
+		this.y += this.velocity;
 	}
 	
 	public void kill() {
@@ -61,7 +62,7 @@ public class Bird {
 		return this.birdImage;
 	}
 	
-	public double getGravity() {
-		return this.gravity;
+	public double getVelocity() {
+		return this.velocity;
 	}
 }

@@ -229,7 +229,7 @@ public class Game extends JPanel implements ActionListener {
 			// Consider only alive birds
 			if (b.isAlive()) {
 				// Rotate the bird depending on its heading
-				AffineTransform tx = AffineTransform.getRotateInstance(Math.PI / 2 * (b.getGravity() / 20), 
+				AffineTransform tx = AffineTransform.getRotateInstance(Math.PI / 2 * (b.getVelocity() / 20), 
 																	   b.getWidth() / 2, b.getHeight() / 2);
 				AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_BILINEAR);
 						
