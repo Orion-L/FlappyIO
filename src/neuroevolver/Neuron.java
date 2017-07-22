@@ -1,3 +1,4 @@
+
 package neuroevolver;
 
 class Neuron {

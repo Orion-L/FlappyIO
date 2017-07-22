@@ -1,3 +1,4 @@
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
@@ -291,5 +292,4 @@ public class Game extends JPanel implements ActionListener {
 		this.birdsAlive = this.birds.size();
 		
 	}
-
 }
