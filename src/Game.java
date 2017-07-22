@@ -129,7 +129,7 @@ public class Game extends JPanel implements ActionListener {
 				// Update the bird
 				b.tick();
 				
-				double[] inputs = {(double) (this.height - b.getY()) / this.height, 
+				double[] inputs = {((double) (this.height - b.getY())) / this.height, 
 					(this.height - nextHole) / this.height};
 				
 				if (this.neuro.evaluateGenome(i, inputs)[0] > FLAP_THRESHOLD) {
