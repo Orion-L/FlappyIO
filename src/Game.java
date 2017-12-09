@@ -36,9 +36,9 @@ public class Game extends JPanel implements ActionListener {
 	private static final double ELITISM = 0.2;
 	private static final double RANDOM_RATE = 0.25;
 	private static final int INPUT_SIZE = 2;
-	private static final int[] HIDDEN = {1};
+	private static final int[] HIDDEN = {5, 4, 3};
 	private static final int OUTPUT_SIZE = 1;
-	private static final double FLAP_THRESHOLD = 0.55;
+	private static final double FLAP_THRESHOLD = 0.5;
 	
 	private ArrayList<Bird> birds;
 	private ArrayList<Pipe> pipes;

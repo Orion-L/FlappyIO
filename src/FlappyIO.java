@@ -46,7 +46,7 @@ public class FlappyIO {
 		gameWindow.add(g);
 			
 		// Set the tick timer
-		Timer t = new Timer(NORMAL_RATE, g);
+		final Timer t = new Timer(NORMAL_RATE, g);
 		t.start();
 		
 		// Create speed buttons

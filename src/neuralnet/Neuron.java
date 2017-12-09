@@ -1,5 +1,5 @@
 
-package neuroevolver;
+package neuralnet;
 
 class Neuron {
 	private double value;

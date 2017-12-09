@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import neuralnet.NeuralNet;
+
 public class Neuroevolver {
 	private int genPopulation, genChildren, numInput, numOutput;
 	private int[] numHidden;

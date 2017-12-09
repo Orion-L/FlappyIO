@@ -1,9 +1,9 @@
 
-package neuroevolver;
+package neuralnet;
 
 import java.util.ArrayList;
 
-class NeuralNet implements Comparable<NeuralNet> {
+public class NeuralNet implements Comparable<NeuralNet> {
 	private Neuron[] inputLayer;
 	private Neuron[] outputLayer;
 	private Neuron[][] hiddenLayers;
