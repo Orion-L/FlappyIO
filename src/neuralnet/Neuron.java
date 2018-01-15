@@ -2,11 +2,13 @@
 package neuralnet;
 
 class Neuron {
-	private double value;
+	private double inputValue;
+	private double outputValue;
 	private double inputWeights[];
 	
 	public Neuron(int numInputs) {
-		this.value = 0;
+		this.inputValue = 0;
+		this.outputValue = 0;
 		this.inputWeights = new double[numInputs];
 		
 		for (int i = 0; i < this.inputWeights.length; i++) {
@@ -14,16 +16,24 @@ class Neuron {
 		}
 	}
 	
-	public void setValue(double value) {
-		this.value = value;
+	public void setInputValue(double value) {
+		this.inputValue = value;
+	}
+
+	public void setOutputValue(double value) {
+		this.outputValue = value;
 	}
 	
 	public void setWeight(int input, double weight) {
 		this.inputWeights[input] = weight;
 	}
 	
-	public double getValue() {
-		return this.value;
+	public double getInputValue() {
+		return this.inputValue;
+	}
+	
+	public double getOutputValue() {
+		return this.outputValue;
 	}
 	
 	public double getWeight(int input) {
@@ -32,7 +42,8 @@ class Neuron {
 	
 	public Neuron clone() {
 		Neuron n = new Neuron(this.inputWeights.length);
-		n.value = this.value;
+		n.inputValue = this.inputValue;
+		n.outputValue = this.outputValue;
 		
 		for (int i = 0; i < this.inputWeights.length; i++) {
 			n.inputWeights[i] = this.inputWeights[i];
