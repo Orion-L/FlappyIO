@@ -62,7 +62,8 @@ public class NeuralNet implements Comparable<NeuralNet> {
 	public double[] evaluateNetwork(double[] inputs) {
 		// Assign values to input layer
 		for (int i = 0; i < this.inputLayer.length; i++) {
-			this.inputLayer[i].setValue(inputs[i]);
+			this.inputLayer[i].setInputValue(inputs[i]);
+			this.inputLayer[i].setOutputValue(inputs[i]);
 		}
 		
 		if (this.hiddenLayers.length > 0) {
@@ -95,7 +96,7 @@ public class NeuralNet implements Comparable<NeuralNet> {
 		// Place output values into return array
 		double[] ret = new double[this.outputLayer.length];
 		for (int i  = 0; i < this.outputLayer.length; i++) {
-			ret[i] = this.outputLayer[i].getValue();
+			ret[i] = this.outputLayer[i].getOutputValue();
 		}
 		
 		return ret;
@@ -194,6 +195,89 @@ public class NeuralNet implements Comparable<NeuralNet> {
 		}
 	}
 	
+	public double getWeight(NodeHandle parent, NodeHandle child) {
+		int childLayer = child.getLayer();
+		int childNum = child.getNodeNum();
+		int parentNum = parent.getNodeNum();
+		
+		if (parent.getLayer() != childLayer - 1 || childLayer == 0) {
+			return 0;
+		} else if (childLayer == this.hiddenLayers.length + 1) {
+			return this.outputLayer[childNum].getWeight(parentNum);
+		} else {
+			return this.hiddenLayers[childLayer - 1][childNum].getWeight(parentNum);
+		}
+	}
+	
+	public void setWeight(NodeHandle parent, NodeHandle child, double weight) {
+		int childLayer = child.getLayer();
+		int childNum = child.getNodeNum();
+		int parentNum = parent.getNodeNum();
+		
+		if (parent.getLayer() != childLayer - 1 || childLayer == 0) {
+			return;
+		} else if (childLayer == this.hiddenLayers.length + 1) {
+			this.outputLayer[childNum].setWeight(parentNum, weight);
+		} else {
+			this.hiddenLayers[childLayer - 1][childNum].setWeight(parentNum, weight);
+		}
+	}
+	
+	public double[] getOutputs() {
+		double[] ret = new double[this.outputLayer.length];
+		for (int i  = 0; i < this.outputLayer.length; i++) {
+			ret[i] = this.outputLayer[i].getOutputValue();
+		}
+		
+		return ret;
+	}
+	
+	public double getOutputValue(NodeHandle node) {
+		int layer = node.getLayer();
+		int nodeNum = node.getNodeNum();
+		
+		if (layer == 0) {
+			return this.inputLayer[nodeNum].getOutputValue();
+		} else if (layer == this.hiddenLayers.length + 1) {
+			return this.outputLayer[nodeNum].getOutputValue();
+		} else {
+			return this.hiddenLayers[layer - 1][nodeNum].getOutputValue();
+		}
+	}
+	
+	public double getInputValue(NodeHandle node) {
+		int layer = node.getLayer();
+		int nodeNum = node.getNodeNum();
+		
+		if (layer == 0) {
+			return this.inputLayer[nodeNum].getInputValue();
+		} else if (layer == this.hiddenLayers.length + 1) {
+			return this.outputLayer[nodeNum].getInputValue();
+		} else {
+			return this.hiddenLayers[layer - 1][nodeNum].getInputValue();
+		}
+	}
+	
+	public NodeHandle[] getChildren(NodeHandle parent) {
+		int parentLayer = parent.getLayer();
+		int numChildren = 0;
+		
+		if (parentLayer == 0) {
+			return null;
+		} else if (parentLayer == 1) {
+			numChildren = this.inputLayer.length;
+		} else {
+			numChildren = this.hiddenLayers[parentLayer - 2].length;
+		}
+		
+		NodeHandle[] ret = new NodeHandle[numChildren];
+		for (int i = 0; i < numChildren; i++) {
+			ret[i] = new NodeHandle(parentLayer - 1, i);
+		}
+		
+		return ret;
+	}
+	
 	public int getScore() {
 		return this.score;
 	}
@@ -208,7 +292,7 @@ public class NeuralNet implements Comparable<NeuralNet> {
 	}
 
 	public double activateDerivative(double x) {
-		return Math.exp(-x) / (2 * (1 + Math.exp(-x)));
+		return (activate(x) * (1 - activate(x)));
 	}
 	
 	@Override
@@ -253,9 +337,10 @@ public class NeuralNet implements Comparable<NeuralNet> {
 		// Sum weighted inputs and apply activation function
 		double inputSum = 0;
 		for (int i = 0; i < inputs.length; i++) {
-			inputSum += inputs[i].getValue() * output.getWeight(i);
+			inputSum += inputs[i].getOutputValue() * output.getWeight(i);
 		}
 		
-		output.setValue(activate(inputSum));
+		output.setInputValue(inputSum);
+		output.setOutputValue(activate(inputSum));
 	}
 }
