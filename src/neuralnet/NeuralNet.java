@@ -203,6 +203,14 @@ public class NeuralNet implements Comparable<NeuralNet> {
 		this.score = score;
 	}
 	
+	public double activate(double x) {
+		return 1 / (1 + Math.exp(-x));
+	}
+
+	public double activateDerivative(double x) {
+		return Math.exp(-x) / (2 * (1 + Math.exp(-x)));
+	}
+	
 	@Override
 	public NeuralNet clone() {
 		// Set up the hidden layer array
@@ -240,9 +248,6 @@ public class NeuralNet implements Comparable<NeuralNet> {
 		return n.score - this.score;
 	}
 	
-	private double activate(double x) {
-		return 1 / (1 + Math.exp(-x));
-	}
 	
 	private void evaluateNeuron(Neuron[] inputs, Neuron output) {
 		// Sum weighted inputs and apply activation function

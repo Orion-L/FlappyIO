@@ -23,8 +23,6 @@ public class FlappyIO {
 				initGUI();
 			}
 		});
-		
-		
 	}
 	
 	public static void initGUI() {
@@ -76,6 +74,15 @@ public class FlappyIO {
 			}
 		});
 		
+		JButton reset = new JButton("reset");
+		reset.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				g.reset();
+			}
+			
+		});
+		
 		// Create bottom panel
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setOpaque(false);
@@ -85,12 +92,13 @@ public class FlappyIO {
 		// Create grid for buttons
 		JPanel buttonGrid = new JPanel();
 		buttonGrid.setOpaque(false);
-		buttonGrid.setLayout(new GridLayout(1, 3, 5, 5));
+		buttonGrid.setLayout(new GridLayout(1, 4, 5, 5));
 		
 		// Add buttons to grid
 		buttonGrid.add(normalSpeed);
 		buttonGrid.add(doubleSpeed);
 		buttonGrid.add(maxSpeed);
+		buttonGrid.add(reset);
 		
 		// Add grid to bottom panel
 		buttonPanel.add(buttonGrid, BorderLayout.WEST);

@@ -98,6 +98,38 @@ public class Game extends JPanel implements ActionListener {
 		// Set the game window layout to border layout
 		this.setLayout(new BorderLayout());
 	}
+
+	public void reset() {
+		// Birds and pipes lists
+		this.birds = new ArrayList<Bird>();
+		this.pipes = new ArrayList<Pipe>();
+		
+		this.score = 0;
+		this.maxScore = 0;
+		
+		// Current tick number
+		this.tickCount = 0;
+		
+		// Current background offset
+		this.backgroundOffset = 0;
+		
+		// Initalise the neuroevolver
+		this.neuro = new Neuroevolver(GEN_SIZE, GEN_CHILDREN, CROSSOVER, 
+			MUTATE_RATE, MUTATE_RANGE, ELITISM, RANDOM_RATE, INPUT_SIZE, 
+			OUTPUT_SIZE, HIDDEN);
+				
+		// Generate the first generation and corresponding birds
+		this.neuro.nextGeneration();
+		this.genNumber = 1;
+				
+		for (int i = 0; i < this.neuro.generationSize(); i++) {
+			Bird b = new Bird(width / 5, height / 2);
+			this.birds.add(b);
+		}
+				
+		this.birdsAlive = this.birds.size();
+		
+	}
 	
 	public void tick() {
 		// Find y coordinate of next hole
