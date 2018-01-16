@@ -262,17 +262,17 @@ public class NeuralNet implements Comparable<NeuralNet> {
 		int parentLayer = parent.getLayer();
 		int numChildren = 0;
 		
-		if (parentLayer == 0) {
+		if (parentLayer == this.hiddenLayers.length + 1) {
 			return null;
-		} else if (parentLayer == 1) {
-			numChildren = this.inputLayer.length;
+		} else if (parentLayer == this.hiddenLayers.length) {
+			numChildren = this.outputLayer.length;
 		} else {
-			numChildren = this.hiddenLayers[parentLayer - 2].length;
+			numChildren = this.hiddenLayers[parentLayer].length;
 		}
 		
 		NodeHandle[] ret = new NodeHandle[numChildren];
 		for (int i = 0; i < numChildren; i++) {
-			ret[i] = new NodeHandle(parentLayer - 1, i);
+			ret[i] = new NodeHandle(parentLayer + 1, i);
 		}
 		
 		return ret;

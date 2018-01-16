@@ -74,11 +74,20 @@ public class FlappyIO {
 			}
 		});
 		
-		JButton reset = new JButton("reset");
-		reset.addActionListener(new ActionListener() {
+		JButton genetic = new JButton("genetic");
+		genetic.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				g.reset();
+				g.reset(false);
+			}
+			
+		});
+
+		JButton backprop = new JButton("backprop");
+		backprop.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				g.reset(true);
 			}
 			
 		});
@@ -92,13 +101,14 @@ public class FlappyIO {
 		// Create grid for buttons
 		JPanel buttonGrid = new JPanel();
 		buttonGrid.setOpaque(false);
-		buttonGrid.setLayout(new GridLayout(1, 4, 5, 5));
+		buttonGrid.setLayout(new GridLayout(1, 5, 5, 5));
 		
 		// Add buttons to grid
 		buttonGrid.add(normalSpeed);
 		buttonGrid.add(doubleSpeed);
 		buttonGrid.add(maxSpeed);
-		buttonGrid.add(reset);
+		buttonGrid.add(genetic);
+		buttonGrid.add(backprop);
 		
 		// Add grid to bottom panel
 		buttonPanel.add(buttonGrid, BorderLayout.WEST);

@@ -4,17 +4,16 @@ import neuralnet.NeuralNet;
 import neuralnet.NodeHandle;
 
 public class Backprop {
-	private static final double learnRate = 0.5;
-	
 	private int numInput, numOutput;
 	private int[] numHidden;
     private double[] yExp;
     private NeuralNet network;
     private double[][] deltaArray;
     private boolean[][] deltaCalculated;
+	private double learnRate;
     
     public Backprop(int numInput, int numOutput,
-    				int[] numHidden) {
+    				int[] numHidden, double learnRate) {
     	this.numInput = numInput;
     	this.numOutput = numOutput;
     	this.numHidden = numHidden.clone();
@@ -36,6 +35,8 @@ public class Backprop {
     			this.deltaCalculated[i] = new boolean[numHidden[i - 1]];
     		}
     	}
+    	
+    	this.learnRate = learnRate;
     }
     
     public double[] evaluate(double[] inputs) {
@@ -55,15 +56,14 @@ public class Backprop {
     		calcDelta(new NodeHandle(0, i));
     	}
     	
-    	for (int i = 0; i < this.deltaArray.length; i++) {
+    	for (int i = 0; i < this.deltaArray.length - 1; i++) {
     		for (int j = 0; j < this.deltaArray[i].length; j++) {
     			NodeHandle parent = new NodeHandle(i, j);
     			NodeHandle[] children = this.network.getChildren(parent);
     			for (NodeHandle c : children) {
     				double newWeight = this.network.getWeight(parent, c);
-    				newWeight -= Backprop.learnRate * this.deltaArray[c.getLayer()][c.getNodeNum()] *
+    				newWeight -= this.learnRate * this.deltaArray[c.getLayer()][c.getNodeNum()] *
     							 this.network.getOutputValue(parent);
-    				
     				this.network.setWeight(parent, c, newWeight);
     			}
     		}
@@ -79,17 +79,19 @@ public class Backprop {
     	} else {
     		NodeHandle[] children = this.network.getChildren(node);
     		double deltaSum = 0;
-    		for (int i = 0; i < children.length; i++) {
-    			if (!this.deltaCalculated[children[i].getLayer()][children[i].getNodeNum()]) {
-    				calcDelta(children[i]);
+    		for (NodeHandle c : children) {
+    			if (!this.deltaCalculated[c.getLayer()][c.getNodeNum()]) {
+    				calcDelta(c);
     			}
     			
-				deltaSum += this.deltaArray[children[i].getLayer()][children[i].getNodeNum()] * 
-							this.network.getWeight(node, children[i]);
+				deltaSum += this.deltaArray[c.getLayer()][c.getNodeNum()] * 
+							this.network.getWeight(node, c);
     		}
     		
     		this.deltaArray[node.getLayer()][node.getNodeNum()] = 
     				this.network.activateDerivative(this.network.getInputValue(node)) * deltaSum;
     	}
+    	
+    	this.deltaCalculated[node.getLayer()][node.getNodeNum()] = true;
     }
 }

@@ -10,10 +10,12 @@ import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Random;
 
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
+import backprop.Backprop;
 import neuroevolver.Neuroevolver;
 
 
@@ -25,7 +27,13 @@ public class Game extends JPanel implements ActionListener {
 	private static final int HOLE_SIZE = 120;
 	private static final int PIPE_MIN_LENGTH = 50;
 	private static final double BACKGROUND_SPEED = 0.5;
-	
+	private static final long SEED = 5;
+
+	// Network constants
+	private static final int INPUT_SIZE = 2;
+	private static final int[] HIDDEN = {2};
+	private static final int OUTPUT_SIZE = 1;
+	private static final double FLAP_THRESHOLD = 0.5;
 	
 	// Neural evolver constants
 	private static final int GEN_SIZE = 50;
@@ -35,10 +43,10 @@ public class Game extends JPanel implements ActionListener {
 	private static final double MUTATE_RANGE = 0.2;
 	private static final double ELITISM = 0.2;
 	private static final double RANDOM_RATE = 0.25;
-	private static final int INPUT_SIZE = 2;
-	private static final int[] HIDDEN = {2};
-	private static final int OUTPUT_SIZE = 1;
-	private static final double FLAP_THRESHOLD = 0.5;
+	
+	// Backpropagation constants
+	private static final double LEARN_RATE = 0.75;
+	
 	
 	private ArrayList<Bird> birds;
 	private ArrayList<Pipe> pipes;
@@ -47,7 +55,12 @@ public class Game extends JPanel implements ActionListener {
 		width, height;
 	private double backgroundOffset;
 	private BufferedImage background;
+	
+	private boolean isBackprop;
 	private Neuroevolver neuro;
+	private Backprop backprop;
+	
+	private Random generator;
 	
 	/**
 	 * Initialise a new game
@@ -79,6 +92,8 @@ public class Game extends JPanel implements ActionListener {
 			System.out.println(e);
 		}
 		
+		this.isBackprop = false;
+		
 		// Initalise the neuroevolver
 		this.neuro = new Neuroevolver(GEN_SIZE, GEN_CHILDREN, CROSSOVER, 
 			MUTATE_RATE, MUTATE_RANGE, ELITISM, RANDOM_RATE, INPUT_SIZE, 
@@ -95,11 +110,13 @@ public class Game extends JPanel implements ActionListener {
 		
 		this.birdsAlive = this.birds.size();
 		
+		this.generator = new Random(SEED);
+		
 		// Set the game window layout to border layout
 		this.setLayout(new BorderLayout());
 	}
 
-	public void reset() {
+	public void reset(boolean isBackprop) {
 		// Birds and pipes lists
 		this.birds = new ArrayList<Bird>();
 		this.pipes = new ArrayList<Pipe>();
@@ -113,22 +130,31 @@ public class Game extends JPanel implements ActionListener {
 		// Current background offset
 		this.backgroundOffset = 0;
 		
-		// Initalise the neuroevolver
-		this.neuro = new Neuroevolver(GEN_SIZE, GEN_CHILDREN, CROSSOVER, 
-			MUTATE_RATE, MUTATE_RANGE, ELITISM, RANDOM_RATE, INPUT_SIZE, 
-			OUTPUT_SIZE, HIDDEN);
-				
-		// Generate the first generation and corresponding birds
-		this.neuro.nextGeneration();
+		this.isBackprop = isBackprop;
+
 		this.genNumber = 1;
-				
-		for (int i = 0; i < this.neuro.generationSize(); i++) {
+		
+		if (isBackprop) {
+			this.backprop = new Backprop(INPUT_SIZE, OUTPUT_SIZE, HIDDEN, LEARN_RATE);
+			
 			Bird b = new Bird(width / 5, height / 2);
 			this.birds.add(b);
-		}
+		} else {
+			// Initalise the neuroevolver
+			this.neuro = new Neuroevolver(GEN_SIZE, GEN_CHILDREN, CROSSOVER, 
+					MUTATE_RATE, MUTATE_RANGE, ELITISM, RANDOM_RATE, INPUT_SIZE, 
+					OUTPUT_SIZE, HIDDEN);
 				
-		this.birdsAlive = this.birds.size();
+			// Generate the first generation and corresponding birds
+			this.neuro.nextGeneration();
+				
+			for (int i = 0; i < this.neuro.generationSize(); i++) {
+				Bird b = new Bird(width / 5, height / 2);
+				this.birds.add(b);
+			}
+		}
 		
+		this.birdsAlive = this.birds.size();
 	}
 	
 	public void tick() {
@@ -165,15 +191,35 @@ public class Game extends JPanel implements ActionListener {
 				double[] inputs = {((double) (this.height - b.getY())) / this.height, 
 					(this.height - nextHole) / this.height};
 				
-				if (this.neuro.evaluateGenome(i, inputs)[0] > FLAP_THRESHOLD) {
-					b.flap();
+				double[] results;
+				if (this.isBackprop) {
+					results = this.backprop.evaluate(inputs);
+					results[0] *= this.height;
+					//System.out.println("res " + results[0]);
+					if (results[0] < b.getY()) {
+						b.flap();
+					}
+				} else {
+					results = this.neuro.evaluateGenome(i, inputs);
+					
+					if (results[0] > FLAP_THRESHOLD) {
+						b.flap();
+					}
 				}
 				
 				if (b.getY() >= this.height || b.getY() + b.getHeight() <= 0) {
 					// Bird is above or below game screen, kill it
-					this.birdsAlive--;
-					this.neuro.updateScore(i, this.score);
 					b.kill();
+					this.birdsAlive--;
+					
+					if (this.isBackprop) {
+						double[] expected = new double[1];
+						expected[0] = (this.height / 2);
+						expected[0] /= this.height;
+						this.backprop.updateNetwork(expected);
+					} else {
+						this.neuro.updateScore(i, this.score);
+					}
 				} else {
 					for (int j = 0; j < this.pipes.size(); j++) {
 						Pipe p = this.pipes.get(j);
@@ -184,7 +230,24 @@ public class Game extends JPanel implements ActionListener {
                             // Bird has hit a pipe, kill it
                         	b.kill();
                             this.birdsAlive--;
-        					this.neuro.updateScore(i, this.score);
+        					
+                            if (this.isBackprop) {
+                            	double[] expected = new double[1];
+                            	if (p.getY() == 0) {
+                            		expected[0] = (p.getHeight() + HOLE_SIZE / 2);
+                            	} else {
+                            		expected[0] = (p.getY() - HOLE_SIZE / 2 - b.getHeight());
+                            	}
+                        		
+                            	expected[0] /= this.height;
+                            	
+                        		//System.out.println(p.getY() + " " + p.getHeight() + " " + expected[0] + " " + expected[0] * this.height);
+                            	
+                            	this.backprop.updateNetwork(expected);
+                            } else {
+                            	this.neuro.updateScore(i, this.score);
+                            }
+                            
                             break;
                         }
 					}
@@ -215,7 +278,7 @@ public class Game extends JPanel implements ActionListener {
 		if (this.tickCount % PIPE_RATE == 0) {
 			// Time to spawn new pipe
 			// Generate hole position
-			int pos = (int) (Math.round(Math.random() 
+			int pos = (int) (Math.round(this.generator.nextDouble() 
 				* (this.height - PIPE_MIN_LENGTH * 2 - HOLE_SIZE)) 
 				+ PIPE_MIN_LENGTH);
 			
@@ -312,13 +375,21 @@ public class Game extends JPanel implements ActionListener {
 		this.backgroundOffset = 0;
 		this.pipes.clear();
 		this.birds.clear();
-		
-		this.neuro.nextGeneration();
+
 		this.genNumber++;
+		
+		if (!this.isBackprop) {
+			this.neuro.nextGeneration();
+		} else {
+			//this.generator = new Random(SEED);
+		}
 		
 		for (int i = 0; i < this.neuro.generationSize(); i++) {
 			Bird b = new Bird(this.width / 5, this.height / 2);
 			this.birds.add(b);
+			if (this.isBackprop) {
+				break;
+			}
 		}
 		
 		this.birdsAlive = this.birds.size();
