@@ -74,6 +74,7 @@ public class FlappyIO {
 			}
 		});
 		
+		// Create learning mode/reset buttons
 		JButton genetic = new JButton("genetic");
 		genetic.addActionListener(new ActionListener() {
 			@Override
@@ -83,6 +84,8 @@ public class FlappyIO {
 			
 		});
 
+		// Doesn't work, disabled for now
+		/*
 		JButton backprop = new JButton("backprop");
 		backprop.addActionListener(new ActionListener() {
 			@Override
@@ -91,6 +94,7 @@ public class FlappyIO {
 			}
 			
 		});
+		*/
 		
 		// Create bottom panel
 		JPanel buttonPanel = new JPanel();
@@ -108,7 +112,7 @@ public class FlappyIO {
 		buttonGrid.add(doubleSpeed);
 		buttonGrid.add(maxSpeed);
 		buttonGrid.add(genetic);
-		buttonGrid.add(backprop);
+		//buttonGrid.add(backprop);
 		
 		// Add grid to bottom panel
 		buttonPanel.add(buttonGrid, BorderLayout.WEST);

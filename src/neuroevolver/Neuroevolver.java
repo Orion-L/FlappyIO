@@ -54,6 +54,10 @@ public class Neuroevolver {
 		this.currentGeneration.get(genomeNum).setScore(score);
 	}
 	
+	/**
+	 * Retrieve the size of the generation
+	 * @return The current generation's size
+	 */
 	public int generationSize() {
 		return this.currentGeneration.size();
 	}
@@ -68,6 +72,9 @@ public class Neuroevolver {
 		return this.currentGeneration.get(genomeNum).evaluateNetwork(inputs);
 	}
 	
+	/**
+	 * Advance to the next generation of networks
+	 */
 	public void nextGeneration() {
 		if (this.currentGeneration == null) {
 			// Generate the first generation
@@ -140,6 +147,12 @@ public class Neuroevolver {
 		}
 	}
 	
+	/**
+	 * Breed together two genomes
+	 * @param g Primary network to breed
+	 * @param h Secondary network to breed
+	 * @return Array of new children networks
+	 */
 	private NeuralNet[] breedGenomes(NeuralNet g, NeuralNet h) {
 		ArrayList<NeuralNet> ret = new ArrayList<NeuralNet>();
 		

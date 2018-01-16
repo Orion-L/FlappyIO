@@ -195,20 +195,35 @@ public class NeuralNet implements Comparable<NeuralNet> {
 		}
 	}
 	
+	/**
+	 * Get the weight between two nodes
+	 * @param parent Parent node of the edge
+	 * @param child Child node of the edge
+	 * @return The edge weight between the two nodes
+	 */
 	public double getWeight(NodeHandle parent, NodeHandle child) {
 		int childLayer = child.getLayer();
 		int childNum = child.getNodeNum();
 		int parentNum = parent.getNodeNum();
 		
 		if (parent.getLayer() != childLayer - 1 || childLayer == 0) {
+			// Return 0 for invalid nodes
 			return 0;
 		} else if (childLayer == this.hiddenLayers.length + 1) {
+			// Child is in output layer
 			return this.outputLayer[childNum].getWeight(parentNum);
 		} else {
+			// Child is in hidden layer
 			return this.hiddenLayers[childLayer - 1][childNum].getWeight(parentNum);
 		}
 	}
 	
+	/**
+	 * Set the weight of an edge between two nodes
+	 * @param parent The parent node of the edge
+	 * @param child The child node of the edge
+	 * @param weight The new edge weight
+	 */
 	public void setWeight(NodeHandle parent, NodeHandle child, double weight) {
 		int childLayer = child.getLayer();
 		int childNum = child.getNodeNum();
@@ -223,6 +238,10 @@ public class NeuralNet implements Comparable<NeuralNet> {
 		}
 	}
 	
+	/**
+	 * Get the outputs of the network
+	 * @return The array of network outputs
+	 */
 	public double[] getOutputs() {
 		double[] ret = new double[this.outputLayer.length];
 		for (int i  = 0; i < this.outputLayer.length; i++) {
@@ -232,6 +251,11 @@ public class NeuralNet implements Comparable<NeuralNet> {
 		return ret;
 	}
 	
+	/**
+	 * Get the output value (post-activation) of a node
+	 * @param node The node to retrieve the output value for
+	 * @return Returns the output value of the supplied node
+	 */
 	public double getOutputValue(NodeHandle node) {
 		int layer = node.getLayer();
 		int nodeNum = node.getNodeNum();
@@ -245,6 +269,11 @@ public class NeuralNet implements Comparable<NeuralNet> {
 		}
 	}
 	
+	/**
+	 * Get the input value (pre-activation) of a node
+	 * @param node The node to retrieve the output value for
+	 * @return Returns the output value of the supplied node
+	 */
 	public double getInputValue(NodeHandle node) {
 		int layer = node.getLayer();
 		int nodeNum = node.getNodeNum();
@@ -258,15 +287,24 @@ public class NeuralNet implements Comparable<NeuralNet> {
 		}
 	}
 	
+	/**
+	 * Get the children of a node
+	 * @param parent The node to retrieve the children for
+	 * @return An array of node handles corresponding to the node's children
+	 */
 	public NodeHandle[] getChildren(NodeHandle parent) {
 		int parentLayer = parent.getLayer();
 		int numChildren = 0;
 		
+		// Children are all nodes in the proceeding layer
 		if (parentLayer == this.hiddenLayers.length + 1) {
+			// Output layer has no children
 			return null;
 		} else if (parentLayer == this.hiddenLayers.length) {
+			// Children are in the output layer
 			numChildren = this.outputLayer.length;
 		} else {
+			// Children are in the hidden layer
 			numChildren = this.hiddenLayers[parentLayer].length;
 		}
 		
@@ -278,19 +316,36 @@ public class NeuralNet implements Comparable<NeuralNet> {
 		return ret;
 	}
 	
+	/**
+	 * Get the score of the network
+	 * @return The current score of the network
+	 */
 	public int getScore() {
 		return this.score;
 	}
 	
-	
+	/**
+	 * Set the network score
+	 * @param score The new score of the network
+	 */
 	public void setScore(int score) {
 		this.score = score;
 	}
 	
+	/**
+	 * The activation function of the network
+	 * @param x The input value
+	 * @return The corresponding function output
+	 */
 	public double activate(double x) {
 		return 1 / (1 + Math.exp(-x));
 	}
 
+	/**
+	 * The derivative of the activation function
+	 * @param x The input value
+	 * @return The corresponding function output
+	 */
 	public double activateDerivative(double x) {
 		return (activate(x) * (1 - activate(x)));
 	}
@@ -332,7 +387,11 @@ public class NeuralNet implements Comparable<NeuralNet> {
 		return n.score - this.score;
 	}
 	
-	
+	/**
+	 * Evaluate a particular neuron
+	 * @param inputs The inputs of the neuron
+	 * @param output The neuron to evaluate
+	 */
 	private void evaluateNeuron(Neuron[] inputs, Neuron output) {
 		// Sum weighted inputs and apply activation function
 		double inputSum = 0;

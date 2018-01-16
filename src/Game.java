@@ -93,6 +93,7 @@ public class Game extends JPanel implements ActionListener {
 		}
 		
 		this.isBackprop = false;
+		this.genNumber = 1;
 		
 		// Initalise the neuroevolver
 		this.neuro = new Neuroevolver(GEN_SIZE, GEN_CHILDREN, CROSSOVER, 
@@ -101,7 +102,6 @@ public class Game extends JPanel implements ActionListener {
 		
 		// Generate the first generation and corresponding birds
 		this.neuro.nextGeneration();
-		this.genNumber = 1;
 		
 		for (int i = 0; i < this.neuro.generationSize(); i++) {
 			Bird b = new Bird(width / 5, height / 2);
@@ -110,12 +110,18 @@ public class Game extends JPanel implements ActionListener {
 		
 		this.birdsAlive = this.birds.size();
 		
-		this.generator = new Random(SEED);
+		// Set up the random number generator
+		//this.generator = new Random(SEED);
+		this.generator = new Random();
 		
 		// Set the game window layout to border layout
 		this.setLayout(new BorderLayout());
 	}
 
+	/**
+	 * Reset the game
+	 * @param isBackprop Flag to indicate whether backpropagation or genetic algorithm should be used
+	 */
 	public void reset(boolean isBackprop) {
 		// Birds and pipes lists
 		this.birds = new ArrayList<Bird>();
@@ -131,21 +137,19 @@ public class Game extends JPanel implements ActionListener {
 		this.backgroundOffset = 0;
 		
 		this.isBackprop = isBackprop;
-
 		this.genNumber = 1;
 		
 		if (isBackprop) {
+			// Initialise the backpropagation module and generate 1 bird
 			this.backprop = new Backprop(INPUT_SIZE, OUTPUT_SIZE, HIDDEN, LEARN_RATE);
 			
 			Bird b = new Bird(width / 5, height / 2);
 			this.birds.add(b);
 		} else {
-			// Initalise the neuroevolver
+			// Initalise the neuroevolver and generate the first generation
 			this.neuro = new Neuroevolver(GEN_SIZE, GEN_CHILDREN, CROSSOVER, 
 					MUTATE_RATE, MUTATE_RANGE, ELITISM, RANDOM_RATE, INPUT_SIZE, 
 					OUTPUT_SIZE, HIDDEN);
-				
-			// Generate the first generation and corresponding birds
 			this.neuro.nextGeneration();
 				
 			for (int i = 0; i < this.neuro.generationSize(); i++) {
@@ -155,8 +159,14 @@ public class Game extends JPanel implements ActionListener {
 		}
 		
 		this.birdsAlive = this.birds.size();
+		
+		// Reset the generator
+		this.generator = new Random(SEED);
 	}
 	
+	/**
+	 * Perform a game update tick
+	 */
 	public void tick() {
 		// Find y coordinate of next hole
 		double nextHole = -1;
@@ -188,14 +198,16 @@ public class Game extends JPanel implements ActionListener {
 				// Update the bird
 				b.tick();
 				
+				// Set up the input array
 				double[] inputs = {((double) (this.height - b.getY())) / this.height, 
 					(this.height - nextHole) / this.height};
 				
-				double[] results;
+				// Evaluate the network and act appropriately
+				double[] results;	
 				if (this.isBackprop) {
 					results = this.backprop.evaluate(inputs);
 					results[0] *= this.height;
-					//System.out.println("res " + results[0]);
+					
 					if (results[0] < b.getY()) {
 						b.flap();
 					}
@@ -213,11 +225,13 @@ public class Game extends JPanel implements ActionListener {
 					this.birdsAlive--;
 					
 					if (this.isBackprop) {
+						// Set expected bird height to middle of the screen and update the network
 						double[] expected = new double[1];
 						expected[0] = (this.height / 2);
 						expected[0] /= this.height;
 						this.backprop.updateNetwork(expected);
 					} else {
+						// Update the bird's network score
 						this.neuro.updateScore(i, this.score);
 					}
 				} else {
@@ -232,6 +246,7 @@ public class Game extends JPanel implements ActionListener {
                             this.birdsAlive--;
         					
                             if (this.isBackprop) {
+                            	// Set the expected bird height to the middle of the gap and update the network
                             	double[] expected = new double[1];
                             	if (p.getY() == 0) {
                             		expected[0] = (p.getHeight() + HOLE_SIZE / 2);
@@ -240,11 +255,9 @@ public class Game extends JPanel implements ActionListener {
                             	}
                         		
                             	expected[0] /= this.height;
-                            	
-                        		//System.out.println(p.getY() + " " + p.getHeight() + " " + expected[0] + " " + expected[0] * this.height);
-                            	
                             	this.backprop.updateNetwork(expected);
                             } else {
+                            	// Update the bird's network score
                             	this.neuro.updateScore(i, this.score);
                             }
                             
@@ -367,6 +380,9 @@ public class Game extends JPanel implements ActionListener {
 		paintComponent(g);
 	}
 	
+	/**
+	 * Perform a round reset (advance to next generation)
+	 */
 	private void restart() {
 		if (this.maxScore < this.score) this.maxScore = this.score;
 		
@@ -380,8 +396,6 @@ public class Game extends JPanel implements ActionListener {
 		
 		if (!this.isBackprop) {
 			this.neuro.nextGeneration();
-		} else {
-			//this.generator = new Random(SEED);
 		}
 		
 		for (int i = 0; i < this.neuro.generationSize(); i++) {
@@ -394,5 +408,6 @@ public class Game extends JPanel implements ActionListener {
 		
 		this.birdsAlive = this.birds.size();
 		
+		//this.generator = new Random(SEED);
 	}
 }
