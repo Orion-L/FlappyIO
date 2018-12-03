@@ -13,6 +13,7 @@ import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
 
 import flappybird.Game;
+import linegraph.LineGraph;
 
 public class FlappyIO {
 	private static final int NORMAL_RATE = 1000 / 60;
@@ -75,7 +76,8 @@ public class FlappyIO {
 				
 			}
 		});
-		
+
+		/*
 		// Create learning mode/reset buttons
 		JButton genetic = new JButton("genetic");
 		genetic.addActionListener(new ActionListener() {
@@ -87,7 +89,6 @@ public class FlappyIO {
 		});
 
 		// Doesn't work, disabled for now
-		/*
 		JButton backprop = new JButton("backprop");
 		backprop.addActionListener(new ActionListener() {
 			@Override
@@ -97,6 +98,51 @@ public class FlappyIO {
 			
 		});
 		*/
+		
+		JButton graph = new JButton("graph");
+		graph.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int[] scores = g.getScoreHistory();
+				if (scores.length < 2) return;
+				
+				t.stop();
+				
+				JFrame graphWindow =  new JFrame();
+				graphWindow.setTitle("FlappyGraph");
+				graphWindow.setSize(windowWidth, windowHeight);
+				graphWindow.setResizable(false);				
+				graphWindow.addWindowListener(new java.awt.event.WindowAdapter() {
+					@Override
+					public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+						t.start();
+					}
+				});
+				graphWindow.setVisible(true);	
+				
+				LineGraph lg = new LineGraph(windowWidth, windowHeight, "scores over generations", 
+						                     1, 1, "generation", "score", scores);
+				graphWindow.add(lg);
+			}
+		});
+		
+		JButton nextGen = new JButton("next gen");
+		nextGen.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				t.stop();
+				g.nextGen();
+				t.start();
+			}
+		});
+		
+		JButton reset = new JButton("reset");
+		reset.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				g.reset(false);
+			}
+		});
 		
 		// Create bottom panel
 		JPanel buttonPanel = new JPanel();
@@ -113,8 +159,11 @@ public class FlappyIO {
 		buttonGrid.add(normalSpeed);
 		buttonGrid.add(doubleSpeed);
 		buttonGrid.add(maxSpeed);
-		buttonGrid.add(genetic);
+		//buttonGrid.add(genetic);
 		//buttonGrid.add(backprop);
+		buttonGrid.add(graph);
+		buttonGrid.add(nextGen);
+		buttonGrid.add(reset);
 		
 		// Add grid to bottom panel
 		buttonPanel.add(buttonGrid, BorderLayout.WEST);

@@ -11,6 +11,7 @@ import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Random;
 
 import javax.imageio.ImageIO;
@@ -57,6 +58,8 @@ public class Game extends JPanel implements ActionListener {
 	private double backgroundOffset;
 	private BufferedImage background;
 	
+	private LinkedList<Integer> scoreHistory;
+	
 	private boolean isBackprop;
 	private Neuroevolver neuro;
 	private Backprop backprop;
@@ -75,6 +78,7 @@ public class Game extends JPanel implements ActionListener {
 		
 		this.score = 0;
 		this.maxScore = 0;
+		this.scoreHistory = new LinkedList<Integer>();
 		
 		// Current tick number
 		this.tickCount = 0;
@@ -130,6 +134,7 @@ public class Game extends JPanel implements ActionListener {
 		
 		this.score = 0;
 		this.maxScore = 0;
+		this.scoreHistory.clear();
 		
 		// Current tick number
 		this.tickCount = 0;
@@ -310,6 +315,41 @@ public class Game extends JPanel implements ActionListener {
 		if (this.score > this.maxScore) this.maxScore = this.score;
 	}
 	
+	/**
+	 * Prematurely end the round and create the next generation.
+	 */
+	public void nextGen() {
+		for (int i = 0; i < this.birds.size(); i++) {
+			Bird b = this.birds.get(i);
+			b.kill();
+			if (this.isBackprop) {
+				double[] expected = new double[1];
+				expected[0] = (this.height / 2);
+				expected[0] /= this.height;
+				this.backprop.updateNetwork(expected);
+			} else {
+				this.neuro.updateScore(i, this.score);
+			}
+		}
+		
+		restart();
+	}
+	
+	/**
+	 * Get the highest score achieved in previous game rounds.
+	 * @return Array of previous high scores.
+	 */
+	public int[] getScoreHistory() {
+		int[] arr = new int[this.scoreHistory.size()];
+		int i = 0;
+		for (int score : this.scoreHistory) {
+			arr[i] = score;
+			i++;
+		}
+		
+		return arr;
+	}
+	
 	@Override
 	public void actionPerformed(ActionEvent evt) {
 		tick();
@@ -386,6 +426,7 @@ public class Game extends JPanel implements ActionListener {
 	 */
 	private void restart() {
 		if (this.maxScore < this.score) this.maxScore = this.score;
+		this.scoreHistory.addLast(this.score);
 		
 		this.score = 0;
 		this.tickCount = 0;
