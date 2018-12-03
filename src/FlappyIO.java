@@ -12,6 +12,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
 
+import FlappyBird.Game;
+
 public class FlappyIO {
 	private static final int NORMAL_RATE = 1000 / 60;
 	private static final int DOUBLE_RATE = 1000 / 120;

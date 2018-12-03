@@ -1,9 +1,10 @@
+package FlappyBird;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
 import javax.imageio.ImageIO;
 
-public class Bird {
+class Bird {
 	private static final double GRAVITY_ACCL = 0.3;
 	private static final int FLAP_ACCL = -6;
 	

@@ -1,10 +1,11 @@
+package FlappyBird;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
 
 import javax.imageio.ImageIO;
 
-public class Pipe {
+class Pipe {
 	private int x, y, height, speed;
 	private BufferedImage pipeImage;
 	
