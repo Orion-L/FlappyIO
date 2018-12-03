@@ -12,7 +12,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
 
-import FlappyBird.Game;
+import flappybird.Game;
 
 public class FlappyIO {
 	private static final int NORMAL_RATE = 1000 / 60;
